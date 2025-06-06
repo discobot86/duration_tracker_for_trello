@@ -1,28 +1,45 @@
 <script src="https://p.trellocdn.com/power-up.min.js"></script>
 <script>
+  // This is the unique key we use to store the data
+  var DATA_KEY = 'estimated-time';
+
   window.TrelloPowerUp.initialize({
-    // This is the capability that creates the section on the card back
+    /**
+     * --- NEW CAPABILITY: CARD BADGE ---
+     * This function runs for each card on the board to decide if a badge should be shown.
+    */
+    'card-badge': function(t, options) {
+      // Get the estimated time that we saved for this card
+      return t.get('card', 'shared', DATA_KEY)
+        .then(function(savedTime) {
+          // Check if a time has been saved and is greater than zero
+          if (savedTime && typeof savedTime === 'number' && savedTime > 0) {
+            // If yes, return the object that describes the badge
+            return {
+              text: savedTime + ' hrs', // The text to display
+              icon: 'https://img.icons8.com/ios/50/time-machine.png', // The same clock icon
+              color: 'blue', // You can pick green, yellow, red, blue, etc.
+            };
+          } else {
+            // If no time is saved, return null to show nothing
+            return null;
+          }
+        });
+    },
+
+    /**
+     * --- EXISTING CAPABILITY: CARD BACK SECTION ---
+     * This part remains the same.
+    */
     'card-back-section': function(t, options) {
       return {
-        // This will be the title of your section
         title: 'Estimated Time (hrs)',
-        
-        // You can point to an icon file in your repo
-        icon: 'https://img.icons8.com/ios/50/time-machine.png', // Example icon
-        
-        // This tells Trello to load your index.html file in an iframe
+        icon: 'https://img.icons8.com/ios/50/time-machine.png',
         content: {
           type: 'iframe',
           url: t.signUrl('./index.html'),
-          height: 80 // You can set an initial height
         }
       };
-    },
-
-    // You may have other capabilities here, like 'card-buttons'.
-    // Leave them as they are.
-    'card-buttons': function(t, options) {
-      // ... your existing card-button logic
     }
   });
 </script>
