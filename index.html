@@ -1,91 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Duration Tracker for Trello</title>
-
-  <!-- 1) Load Trello’s Power-Up library into the iframe -->
-  <script src="https://p.trellocdn.com/power-up.min.js"></script>
-
-  <style>
-    /* --------------------------------------------
-       Remove every margin/padding, so only the input shows
-       -------------------------------------------- */
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: transparent;
-      overflow: hidden;
-    }
-    body {
-      font-family: Arial, sans-serif;
-    }
-
-    /* ------------------------------------------------
-       2) Trello-style input, full width of container
-       ------------------------------------------------ */
-    input[type="number"] {
-      width: 100%;
-      padding: 6px 8px;
-      font-size: 14px;
-      border: 1px solid #dfe1e6;
-      border-radius: 3px;
-      background-color: #fafbfc;
-      box-sizing: border-box;
-      line-height: 20px; /* so that height is predictable */
-    }
-  </style>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
+  <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-  <!-- 3) Only the input: “Est. Time (hrs)” lives in connector.html → title -->
-  <input
-    type="number"
-    id="est-time"
-    min="0"
-    step="0.25"
-    placeholder="0.00"
-  />
+  <div id="content">
+    <div>
+      <label for="estTime">Est. Time (hrs)</label>
+      <input type="number" id="estTime" class="input" value="0.00" step="0.25">
+    </div>
+  </div>
 
-  <script>
-    const t = TrelloPowerUp.iframe();
-
-    t.render(function() {
-      const inputEl = document.getElementById('est-time');
-
-      // (a) Load any saved value, then force a resize a tick later
-      t.get('card', 'shared', 'estTime').then(function(existingValue) {
-        if (existingValue) {
-          inputEl.value = existingValue;
-        }
-        // Defer the sizeToFit call to ensure the DOM has rendered
-        setTimeout(function() {
-          if (typeof t.sizeToFit === 'function') {
-            t.sizeToFit();
-          }
-        }, 0);
-      }).catch(function() {
-        // Even if get() fails, still force resize
-        setTimeout(function() {
-          if (typeof t.sizeToFit === 'function') {
-            t.sizeToFit();
-          }
-        }, 0);
-      });
-
-      // (b) On change, save & re-resize
-      inputEl.addEventListener('change', function() {
-        const v = this.value.trim();
-        if (v !== '' && !isNaN(v)) {
-          t.set('card', 'shared', 'estTime', v).then(function() {
-            setTimeout(function() {
-              if (typeof t.sizeToFit === 'function') {
-                t.sizeToFit();
-              }
-            }, 0);
-          });
-        }
-      });
-    });
-  </script>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script src="./js/index.js"></script>
 </body>
 </html>
