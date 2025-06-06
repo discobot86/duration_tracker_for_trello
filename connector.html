@@ -5,28 +5,27 @@
   <title>Duration Tracker Connector</title>
 </head>
 <body>
-  <!-- 1) Load the Trello Power-Up library -->
+  <!-- 1) Load TrelloPowerUp library -->
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
 
   <script>
     window.TrelloPowerUp.initialize({
-      // 2) Declare card-back-section capability exactly as Trello expects:
+      // 2) Only one capability: card-back-section
       'card-back-section': function(t, options) {
         return {
-          // (a) Small icon next to the header (replace with your icon URL):
+          // (a) A tiny icon next to the header label
           icon: 'https://discobot86.github.io/duration_tracker_for_trello/icon.png',
-          // (b) This text (“Est. Time (hrs)”) appears in Trello’s card header,
-          //     aligned just like the built-in “Description” label does:
+          // (b) Put the label into Trello's Card-Back header,
+          //     so it lines up exactly with "Description", "Labels", etc.
           title: 'Est. Time (hrs)',
-          // (c) Load index.html inside a VERY small iframe initially:
+          // (c) Load the iframe (our index.html):
           content: {
             type: 'iframe',
             url: 'https://discobot86.github.io/duration_tracker_for_trello/index.html'
           },
-          // (d) Fallback height: 50px. If sizeToFit() never runs, Trello will
-          //     only allocate ~50px. Once index.html calls sizeToFit(), it will
-          //     shrink to exactly what’s needed (likely ~30px or so).
-          height: 50
+          // (d) Fallback: only 30px tall. If sizeToFit() never fires,
+          //     Trello still only gives us about 30px of height.
+          height: 30
         };
       }
     });
