@@ -1,58 +1,50 @@
-// js/index.js
+/* index.js */
 
-// Initialize the Trello Power-Up iframe
-var t = window.TrelloPowerUp.iframe();
-
-// Get a reference to our input field from index.html
-var estTimeInput = document.getElementById('estTime');
-
-// This is the unique key we'll use to store our data on the card
 var DATA_KEY = 'estimated-time';
 
-/**
- * --- RENDER THE POWER-UP AND LOAD SAVED DATA ---
- * t.render() is called every time the card back is opened.
- */
-t.render(function() {
-  // We'll get all data for this card, then apply our theme and resize.
-  return t.get('card', 'shared', DATA_KEY)
-    .then(function(savedTime) {
-      // Check if there was a number previously saved
-      if (savedTime && typeof savedTime === 'number') {
-        // If so, set the value of our input field to the saved number
-        estTimeInput.value = savedTime;
-      }
-    })
-    .then(function() {
-      // Next, get the user's theme (light or dark)
-      return t.get('body', 'private', 'theme');
-    })
-    .then(function(theme) {
-      // Apply the 'dark-mode' class to the body if needed
-      if (theme && theme.isDark) {
-        document.body.classList.add('dark-mode');
-      } else {
-        document.body.classList.remove('dark-mode');
-      }
-      
-      // Finally, resize the iframe to fit our content perfectly
-      t.sizeTo('#content');
-    });
-});
+window.TrelloPowerUp.initialize({
+  // -----------------------------
+  // 1. Card-badges capability
+  // -----------------------------
+  // Shows a badge on each card if "estimated-time" exists in shared storage.
+  'card-badges': function(t, opts) {
+    return t.get('card', 'shared', DATA_KEY)
+      .then(function(duration) {
+        // If there's no stored value, return an empty array so no badge appears.
+        if (!duration) {
+          return [];
+        }
 
-/**
- * --- HANDLE INPUT CHANGES AND SAVE DATA ---
- * We add an event listener to the input field.
- */
-estTimeInput.addEventListener('change', function() {
-  // 'change' fires when the user clicks away or hits Enter after editing.
-  
-  // Get the current value and convert it to a floating-point number
-  var newTime = parseFloat(estTimeInput.value);
-  
-  // Make sure it's a valid number before saving
-  if (!isNaN(newTime)) {
-    // This is where we save the data to the Trello card
-    return t.set('card', 'shared', DATA_KEY, newTime);
+        return [{
+          text: duration,      // e.g. "1h", "30m", etc.
+          color: null,         // default color; or use a hex string like "#00aaff"
+          callback: function(t) {
+            // Optional: show a small popup if the badge is clicked.
+            return t.popup({
+              title: 'Estimated Time',
+              url: './badge-popup.html',
+              height: 100
+            });
+          }
+        }];
+      });
+  },
+
+  // ---------------------------------
+  // 2. Card-back-section capability
+  // ---------------------------------
+  // Adds a section on the card back where users can edit "estimated-time".
+  'card-back-section': function(t, opts) {
+    return {
+      title: 'Estimated Time',
+      icon: './clock-icon.svg',      // optional 24×24 icon path
+      content: {
+        type: 'iframe',
+        url: t.signUrl('./card-back.html'),
+        height: 120
+      }
+    };
   }
+
+  // You can add more capabilities (e.g., "card-buttons") if needed.
 });
