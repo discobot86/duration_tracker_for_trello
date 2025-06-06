@@ -3,11 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Duration Tracker for Trello</title>
-
-  <!-- 1) Load the Trello Power-Up client library -->
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
   <style>
-    /* Basic styling—you can customize as desired */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -35,13 +32,8 @@
   </style>
 </head>
 <body>
-  <!-- 
-    2) This is the content that will appear inside the iframe 
-       on the card-back under "Track Duration".
-  -->
   <h2>Duration Tracker</h2>
   <p>Enter your planned duration (in hours):</p>
-
   <label for="planned-duration">
     Planned duration (hrs):
     <input
@@ -52,15 +44,12 @@
       placeholder="e.g. 1.0, 1.25, 2.0"
     />
   </label>
-
   <button id="saveBtn">Save Duration</button>
   <div id="status"></div>
 
   <script>
-    // 3) Initialize the Trello iframe context
     const t = TrelloPowerUp.iframe();
 
-    // 4) On load, fetch any existing stored value and pre-fill the input
     t.get('card', 'shared', 'plannedDuration')
       .then(function(existingValue) {
         if (existingValue) {
@@ -68,7 +57,6 @@
         }
       });
 
-    // 5) When the user clicks “Save”, write that number back to the card
     document.getElementById('saveBtn').addEventListener('click', function() {
       const inputEl = document.getElementById('planned-duration');
       const value = inputEl.value.trim();
@@ -79,7 +67,6 @@
         return;
       }
 
-      // Save to the card’s shared storage under key = 'plannedDuration'
       t.set('card', 'shared', 'plannedDuration', value)
         .then(function() {
           document.getElementById('status').textContent =
@@ -92,8 +79,6 @@
         });
     });
 
-    // (Optional) If you want to automatically resize the iframe
-    // based on your content height, you can call:
     t.sizeToFit().catch(function(e) {
       // ignore errors
     });
