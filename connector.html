@@ -1,31 +1,28 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title>Duration Tracker Connector</title>
-</head>
-<body>
-  <!-- 1) Load the Trello Power-Up library -->
-  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+<script src="https://p.trellocdn.com/power-up.min.js"></script>
+<script>
+  window.TrelloPowerUp.initialize({
+    // This is the capability that creates the section on the card back
+    'card-back-section': function(t, options) {
+      return {
+        // This will be the title of your section
+        title: 'Estimated Time',
+        
+        // You can point to an icon file in your repo
+        icon: 'https://img.icons8.com/ios/50/time-machine.png', // Example icon
+        
+        // This tells Trello to load your index.html file in an iframe
+        content: {
+          type: 'iframe',
+          url: t.signUrl('./index.html'),
+          height: 80 // You can set an initial height
+        }
+      };
+    },
 
-  <script>
-    window.TrelloPowerUp.initialize({
-      'card-back-section': function(t, options) {
-        return {
-          // (a) Tiny icon next to the header label:
-          icon: 'https://discobot86.github.io/duration_tracker_for_trello/icon.png',
-          // (b) Label text in Trello’s Card-Back header:
-          title: 'Est. Time (hrs)',
-          // (c) Load our index.html inside an iframe:
-          content: {
-            type: 'iframe',
-            url: 'https://discobot86.github.io/duration_tracker_for_trello/index.html'
-          },
-          // (d) Fallback: only 1px tall—sizeToFit() must run to show the input
-          height: 1
-        };
-      }
-    });
-  </script>
-</body>
-</html>
+    // You may have other capabilities here, like 'card-buttons'.
+    // Leave them as they are.
+    'card-buttons': function(t, options) {
+      // ... your existing card-button logic
+    }
+  });
+</script>
