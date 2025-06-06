@@ -12,7 +12,7 @@
   "capabilities": {
     "card-back-section": {
       "url": "https://discobot86.github.io/duration_tracker_for_trello/index.html",
-      "height": 150
+      "height": 200
     },
     "card-badges": {},
     "card-buttons": {},
