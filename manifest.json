@@ -1,0 +1,22 @@
+{
+  "id": "duration-tracker",
+  "name": "Duration Tracker",
+  "desc": "Show how long a card has been in each list",
+  "author": "Your Name",
+  "icon": {
+    "url": "https://raw.githubusercontent.com/discobot86/duration_tracker_for_trello/main/icon.png",
+    "url16x16": "https://raw.githubusercontent.com/discobot86/duration_tracker_for_trello/main/icon.png",
+    "url32x32": "https://raw.githubusercontent.com/discobot86/duration_tracker_for_trello/main/icon.png",
+    "url64x64": "https://raw.githubusercontent.com/discobot86/duration_tracker_for_trello/main/icon.png"
+  },
+  "capabilities": {
+    "card-back-section": {
+      "url": "./index.html",
+      "height": 150  /* adjust as needed, max 1500 */
+    },
+    "card-badges": {},
+    "card-buttons": {},
+    "on-enable": {},
+    "on-disable": {}
+  }
+}
