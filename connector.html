@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Duration Tracker Connector</title>
+</head>
+<body>
+  <!-- 1) Load the Trello Power-Up client library -->
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+
+  <script>
+    window.TrelloPowerUp.initialize({
+      // 2) Declare the card-back-section capability
+      'card-back-section': function(t, options) {
+        return {
+          // (a) The icon the user sees in the card-back header
+          icon: 'https://discobot86.github.io/duration_tracker_for_trello/icon.png',
+          // (b) The text label for the section
+          title: 'Track Duration',
+          // (c) The iframe URL to load your actual HTML
+          content: {
+            type: 'iframe',
+            url: 'https://discobot86.github.io/duration_tracker_for_trello/index.html'
+          }
+        };
+      }
+
+      // If you need other capabilities later, add them here:
+      // 'card-buttons': function(t, options) { … },
+      // 'card-badges': function(t, options) { … },
+      // etc.
+    });
+  </script>
+</body>
+</html>
