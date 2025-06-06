@@ -1,41 +1,11 @@
 <script src="https://p.trellocdn.com/power-up.min.js"></script>
 <script>
-  // This is the unique key we use to store the data
-  var DATA_KEY = 'estimated-time';
-
   window.TrelloPowerUp.initialize({
-    /**
-     * --- NEW CAPABILITY: CARD BADGE (WITH DEBUG LOGS) ---
-    */
     'card-badge': function(t, options) {
-      // DEBUG LOG 1: Let's see if the function is even running
-      console.log('Badge function is running for a card...');
-
-      return t.get('card', 'shared', DATA_KEY)
-        .then(function(savedTime) {
-          // DEBUG LOG 2: Let's see what value we got from storage
-          console.log('For a card, found savedTime:', savedTime, '| Type:', typeof savedTime);
-
-          if (savedTime && typeof savedTime === 'number' && savedTime > 0) {
-            // DEBUG LOG 3: This will only print if the condition is met
-            console.log('SUCCESS: Condition was met. Returning badge object.');
-            return {
-              text: savedTime + ' hrs',
-              icon: 'https://img.icons8.com/ios/50/time-machine.png',
-              color: 'blue',
-            };
-          } else {
-            // DEBUG LOG 4: This will print if the condition fails
-            console.log('INFO: Condition not met. Returning null.');
-            return null;
-          }
-        });
+      // This is the simplest possible badge. It does nothing.
+      // We are using this to test if the Power-Up can initialize correctly.
+      return null;
     },
-
-    /**
-     * --- EXISTING CAPABILITY: CARD BACK SECTION ---
-     * This part remains the same.
-    */
     'card-back-section': function(t, options) {
       return {
         title: 'Estimated Time (hrs)',
