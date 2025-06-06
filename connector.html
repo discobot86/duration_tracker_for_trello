@@ -1,38 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8"/>
+  <meta charset="utf-8" />
   <title>Duration Tracker Connector</title>
 </head>
 <body>
-  <!-- 1) Load Trello’s Power-Up library -->
+  <!-- 1) Load the Trello Power-Up library -->
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
 
   <script>
     window.TrelloPowerUp.initialize({
-      // 2) Declare the card-back-section capability:
+      // 2) Declare card-back-section capability exactly as Trello expects:
       'card-back-section': function(t, options) {
         return {
-          // (a) This small icon appears next to the “Est. Time (hrs)” label
+          // (a) Small icon next to the header (replace with your icon URL):
           icon: 'https://discobot86.github.io/duration_tracker_for_trello/icon.png',
-
-          // (b) This label text appears in Trello’s Card-Back header,
-          //     aligned exactly like the “Description” section does.
+          // (b) This text (“Est. Time (hrs)”) appears in Trello’s card header,
+          //     aligned just like the built-in “Description” label does:
           title: 'Est. Time (hrs)',
-
-          // (c) We’ll load index.html inside an iframe here:
+          // (c) Load index.html inside a VERY small iframe initially:
           content: {
             type: 'iframe',
             url: 'https://discobot86.github.io/duration_tracker_for_trello/index.html'
           },
-
-          // (d) A small fallback height (in pixels). If t.sizeToFit() doesn’t run for some reason,
-          //     Trello will still only allocate ~60px of vertical space.
-          height: 60
+          // (d) Fallback height: 50px. If sizeToFit() never runs, Trello will
+          //     only allocate ~50px. Once index.html calls sizeToFit(), it will
+          //     shrink to exactly what’s needed (likely ~30px or so).
+          height: 50
         };
       }
-
-      // If you ever add other capabilities (card-buttons, card-badges, etc.), add them here.
     });
   </script>
 </body>
