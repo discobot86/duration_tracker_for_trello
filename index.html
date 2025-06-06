@@ -4,26 +4,25 @@
   <meta charset="UTF-8" />
   <title>Duration Tracker for Trello</title>
 
-  <!-- 1) Load Trello's Power-Up library into the iframe -->
+  <!-- 1) Load Trello’s Power-Up library into the iframe -->
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
 
   <style>
     /* --------------------------------------------
-       Strip out every default margin/padding:
-       We want nothing but the input itself (no gaps).
+       Remove every margin/padding, so only the input shows
        -------------------------------------------- */
     html, body {
       margin: 0;
       padding: 0;
-      height: auto;
       background: transparent;
       overflow: hidden;
     }
+    body {
+      font-family: Arial, sans-serif;
+    }
 
     /* ------------------------------------------------
-       A single Trello-styled number input:
-       - Full width of container
-       - Same border/background/font as Trello
+       2) Trello-style input, full width of container
        ------------------------------------------------ */
     input[type="number"] {
       width: 100%;
@@ -33,15 +32,12 @@
       border-radius: 3px;
       background-color: #fafbfc;
       box-sizing: border-box;
-      line-height: 20px; /* keep height predictable */
+      line-height: 20px; /* so that height is predictable */
     }
   </style>
 </head>
 <body>
-  <!--
-    2) Only render the input itself.
-       The "Est. Time (hrs)" label lives in connector.html → title.
-  -->
+  <!-- 3) Only the input: “Est. Time (hrs)” lives in connector.html → title -->
   <input
     type="number"
     id="est-time"
@@ -51,39 +47,41 @@
   />
 
   <script>
-    // 3) Initialize Trello iframe context
     const t = TrelloPowerUp.iframe();
 
-    // 4) Wait for the Trello iframe to be fully ready
     t.render(function() {
       const inputEl = document.getElementById('est-time');
 
-      // (a) Load any existing value
-      t.get('card', 'shared', 'estTime')
-        .then(function(existingValue) {
-          if (existingValue) {
-            inputEl.value = existingValue;
-          }
-          // After pre-filling (or if blank), immediately resize
+      // (a) Load any saved value, then force a resize a tick later
+      t.get('card', 'shared', 'estTime').then(function(existingValue) {
+        if (existingValue) {
+          inputEl.value = existingValue;
+        }
+        // Defer the sizeToFit call to ensure the DOM has rendered
+        setTimeout(function() {
           if (typeof t.sizeToFit === 'function') {
             t.sizeToFit();
           }
-        })
-        .catch(function() {
-          // If there was an error fetching, still resize
+        }, 0);
+      }).catch(function() {
+        // Even if get() fails, still force resize
+        setTimeout(function() {
           if (typeof t.sizeToFit === 'function') {
             t.sizeToFit();
           }
-        });
+        }, 0);
+      });
 
-      // (b) Whenever the user changes the number, save & re-resize
+      // (b) On change, save & re-resize
       inputEl.addEventListener('change', function() {
         const v = this.value.trim();
         if (v !== '' && !isNaN(v)) {
           t.set('card', 'shared', 'estTime', v).then(function() {
-            if (typeof t.sizeToFit === 'function') {
-              t.sizeToFit();
-            }
+            setTimeout(function() {
+              if (typeof t.sizeToFit === 'function') {
+                t.sizeToFit();
+              }
+            }, 0);
           });
         }
       });
