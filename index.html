@@ -1,78 +1,78 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Duration Tracker Connector (Hours)</title>
-    <style>
-      body { font-family: Arial, sans-serif; margin: 8px; }
-      label { display: block; margin-top: 8px; font-size: 14px; }
-      input[type="number"] {
-        width: 100%;
-        padding: 4px;
-        margin-top: 4px;
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Duration Tracker for Trello</title>
+
+  <!-- 1) Load Trello’s Power-Up client library -->
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+
+  <!-- (Optional) Any CSS you already had can go here -->
+  <style>
+    /* Example styling—you can remove or replace with your own */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    #content {
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 
+    2) This <div> is where your existing UI goes.
+       If you already had HTML here, copy it in exactly as it was.
+  -->
+  <div id="content">
+    <!-- === BEGIN your original content === -->
+
+    <!-- 
+      (Paste whatever was already in index.html here. 
+       For example, if you already had a header, buttons, etc., just drop it in.) 
+    -->
+    <h2>Duration Tracker</h2>
+    <p>Loading duration data…</p>
+    <!-- === END your original content === -->
+  </div>
+
+  <!-- 3) Initialize the Power-Up and declare the card-back-section capability -->
+  <script>
+    window.TrelloPowerUp.initialize({
+      // This key must match “card-back-section”
+      'card-back-section': function(t, opts) {
+        return {
+          // The header title of your section on the card back
+          title: 'Track Duration',
+
+          // A small 32×32 or 64×64 icon shown next to the title
+          icon: 'https://raw.githubusercontent.com/discobot86/duration_tracker_for_trello/main/icon.png',
+
+          // Define the content as an iframe pointing back to this page
+          content: {
+            type: 'iframe',
+            // When Trello renders the card back, it will load index.html inside this iframe
+            url: t.signUrl('./index.html'),
+            height: 150 // Adjust if you need more/less vertical space
+          },
+
+          // (Optional) Add a Refresh button in the section header
+          action: {
+            text: 'Refresh',
+            callback: function(t) {
+              // Example: Show a tiny popup when the user clicks “Refresh”
+              return t.popup({
+                title: 'Refreshed',
+                body: 'Duration data has been updated.'
+              });
+            }
+          }
+        };
       }
-      button { margin-top: 12px; padding: 6px 12px; cursor: pointer; }
-      #status { margin-left: 8px; font-size: 12px; color: green; }
-    </style>
-  </head>
-  <body>
-    <label for="planned-hr">Planned Duration (hrs):</label>
-    <input
-      type="number"
-      id="planned-hr"
-      min="0"
-      step="0.25"
-      placeholder="e.g. 0.25"
-    />
 
-    <label for="actual-hr">Actual Duration (hrs):</label>
-    <input
-      type="number"
-      id="actual-hr"
-      min="0"
-      step="0.25"
-      placeholder="e.g. 1.50"
-    />
-
-    <button id="save-btn">Save</button>
-    <span id="status"></span>
-
-    <script src="https://p.trellocdn.com/power-up.min.js"></script>
-    <script>
-      // Initialize the Trello Power-Up iframe context
-      var t = TrelloPowerUp.iframe();
-
-      // Use clear keys to store/retrieve hours rather than minutes
-      const KEY_PLANNED = 'duration-tracker:planned-hr';
-      const KEY_ACTUAL  = 'duration-tracker:actual-hr';
-
-      // When the card back is rendered, load any saved values
-      t.render(function() {
-        return Promise.all([
-          t.get('card', 'shared', KEY_PLANNED),
-          t.get('card', 'shared', KEY_ACTUAL)
-        ]).then(function(values) {
-          document.getElementById('planned-hr').value = values[0] || '';
-          document.getElementById('actual-hr').value  = values[1] || '';
-        });
-      });
-
-      // When “Save” is clicked, write both values back into shared storage
-      document.getElementById('save-btn').addEventListener('click', function() {
-        // Read the numeric values (empty string → stored as "")
-        var plannedVal = (document.getElementById('planned-hr').value || '').toString();
-        var actualVal  = (document.getElementById('actual-hr').value  || '').toString();
-
-        Promise.all([
-          t.set('card', 'shared', KEY_PLANNED, plannedVal),
-          t.set('card', 'shared', KEY_ACTUAL,  actualVal)
-        ]).then(function() {
-          document.getElementById('status').textContent = 'Saved!';
-          setTimeout(function() {
-            document.getElementById('status').textContent = '';
-          }, 1500);
-        });
-      });
-    </script>
-  </body>
+      // … you can register more capabilities here if needed …
+    });
+  </script>
+</body>
 </html>
