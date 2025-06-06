@@ -1,0 +1,18 @@
+{
+  "name": "Duration Tracker",
+  "version": "1.0.1",
+  "author": "Luc Bourque",
+  "description": "A Power-Up to track estimated duration on Trello cards.",
+  "connector": "https://discobot86.github.io/duration_tracker_for_trello/connector-v2.html",
+  "capabilities": [
+    "card-back-section",
+    "card-badge"
+  ],
+  "permissions": [
+    "read",
+    "write"
+  ],
+  "icon": {
+    "url": "https://discobot86.github.io/duration_tracker_for_trello/icon.png"
+  }
+}
