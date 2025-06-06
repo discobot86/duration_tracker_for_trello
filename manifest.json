@@ -6,7 +6,7 @@
   "connector": "https://discobot86.github.io/duration_tracker_for_trello/connector-v2.html",
   "capabilities": [
     "card-back-section",
-    "card-badge"
+    "card-badges"
   ],
   "permissions": [
     "read",
