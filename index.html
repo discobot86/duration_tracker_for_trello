@@ -4,27 +4,26 @@
   <meta charset="UTF-8" />
   <title>Duration Tracker for Trello</title>
 
-  <!-- 1) Load Trello’s Power-Up library -->
+  <!-- 1) Load Trello's Power-Up library into the iframe -->
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
 
   <style>
-    /* ---------------------------------------------
-       Strip out extra margins so the iframe is minimal
-       --------------------------------------------- */
+    /* --------------------------------------------
+       Strip out every default margin/padding:
+       We want nothing but the input itself (no gaps).
+       -------------------------------------------- */
     html, body {
       margin: 0;
       padding: 0;
-      background: transparent; /* Let Trello’s Card-Back show behind */
-    }
-    body {
-      font-family: Arial, sans-serif;
-      overflow: hidden;        /* No scrollbars—sizeToFit will handle height */
+      height: auto;
+      background: transparent;
+      overflow: hidden;
     }
 
     /* ------------------------------------------------
        A single Trello-styled number input:
-       - Full width of its container (whatever the iframe is)
-       - Same border, background, font-size as Trello’s own fields
+       - Full width of container
+       - Same border/background/font as Trello
        ------------------------------------------------ */
     input[type="number"] {
       width: 100%;
@@ -34,13 +33,14 @@
       border-radius: 3px;
       background-color: #fafbfc;
       box-sizing: border-box;
+      line-height: 20px; /* keep height predictable */
     }
   </style>
 </head>
 <body>
-  <!-- 
-    2) We show exactly ONE input (no inline labels) 
-       because "Est. Time (hrs)" lives in the header via connector.html → title.
+  <!--
+    2) Only render the input itself.
+       The "Est. Time (hrs)" label lives in connector.html → title.
   -->
   <input
     type="number"
@@ -51,25 +51,32 @@
   />
 
   <script>
-    // 3) Initialize Trello’s iframe context
+    // 3) Initialize Trello iframe context
     const t = TrelloPowerUp.iframe();
 
-    // 4) Wait until Trello's iframe environment is ready
+    // 4) Wait for the Trello iframe to be fully ready
     t.render(function() {
       const inputEl = document.getElementById('est-time');
 
-      // (a) On load, fetch any saved “estTime” value from the card:
-      t.get('card', 'shared', 'estTime').then(function(existingValue) {
-        if (existingValue) {
-          inputEl.value = existingValue;
-        }
-        // After setting the value (or even if blank), immediately resize:
-        if (typeof t.sizeToFit === 'function') {
-          t.sizeToFit();
-        }
-      });
+      // (a) Load any existing value
+      t.get('card', 'shared', 'estTime')
+        .then(function(existingValue) {
+          if (existingValue) {
+            inputEl.value = existingValue;
+          }
+          // After pre-filling (or if blank), immediately resize
+          if (typeof t.sizeToFit === 'function') {
+            t.sizeToFit();
+          }
+        })
+        .catch(function() {
+          // If there was an error fetching, still resize
+          if (typeof t.sizeToFit === 'function') {
+            t.sizeToFit();
+          }
+        });
 
-      // (b) Whenever the user changes the number, save it back and re-resize:
+      // (b) Whenever the user changes the number, save & re-resize
       inputEl.addEventListener('change', function() {
         const v = this.value.trim();
         if (v !== '' && !isNaN(v)) {
@@ -80,14 +87,6 @@
           });
         }
       });
-
-      // (c) If no value was ever saved (so the “then” above never fired),
-      //     still call sizeToFit once to collapse height:
-      if (!inputEl.value) {
-        if (typeof t.sizeToFit === 'function') {
-          t.sizeToFit();
-        }
-      }
     });
   </script>
 </body>
