@@ -3,96 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <title>Duration Tracker for Trello</title>
+
+  <!-- 1) Load the Trello Power-Up client library into the iframe -->
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
+
   <style>
+    /* --------- MINIMAL STYLING to keep the box very small --------- */
+    html, body {
+      margin: 0;
+      padding: 5px;
+    }
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 10px;
+      background: transparent;
     }
     label {
+      font-size: 11px;       /* small text for "Est. Time" */
+      margin-bottom: 2px;
       display: block;
-      margin-bottom: 8px;
+      color: #444;
     }
     input[type="number"] {
-      width: 100%;
-      padding: 6px;
+      width: 60px;           /* just wide enough for “0.75”, “1.25”, etc. */
+      padding: 4px;
+      font-size: 13px;
       box-sizing: border-box;
-    }
-    button {
-      margin-top: 8px;
-      padding: 6px 12px;
-      cursor: pointer;
-    }
-    #status {
-      margin-top: 8px;
-      font-size: 0.9em;
-      color: green;
+      border: 1px solid #ccc;
+      border-radius: 3px;
     }
   </style>
 </head>
 <body>
-  <h2>Duration Tracker</h2>
-  <p>Enter your planned duration (in hours):</p>
-  <label for="planned-duration">
-    Planned duration (hrs):
-    <input
-      type="number"
-      id="planned-duration"
-      min="0"
-      step="0.25"
-      placeholder="e.g. 1.0, 1.25, 2.0"
-    />
-  </label>
-  <button id="saveBtn">Save Duration</button>
-  <div id="status"></div>
+  <!-- 
+    2) Show “Est. Time” above a tiny input box. 
+       Whenever the user types a number, we’ll auto-save that value into the card’s shared data.
+  -->
+  <label for="est-time">Est. Time (hrs):</label>
+  <input
+    type="number"
+    id="est-time"
+    min="0"
+    step="0.25"
+    placeholder="0.00"
+  />
 
   <script>
-    // 1) Initialize the Power-Up iframe context
+    // 3) Initialize the Trello iframe context:
     const t = TrelloPowerUp.iframe();
 
-    // 2) Use t.render(...) so that Trello knows to wait until the iframe is ready.
+    // 4) Wait until the Trello iframe is fully ready before running our logic:
     t.render(function() {
-      // 3) On load, fetch any existing stored value and pre-fill the input
-      t.get('card', 'shared', 'plannedDuration')
-        .then(function(existingValue) {
-          if (existingValue) {
-            document.getElementById('planned-duration').value = existingValue;
-          }
-        });
+      const inputEl = document.getElementById('est-time');
 
-      // 4) When the user clicks "Save", write that number back to the card
-      document.getElementById('saveBtn').addEventListener('click', function() {
-        const inputEl = document.getElementById('planned-duration');
-        const value = inputEl.value.trim();
-
-        if (value === '' || isNaN(value)) {
-          document.getElementById('status').textContent =
-            'Please enter a valid number.';
-          return;
+      // (a) On load, fetch any existing “estTime” value stored on this card and pre-fill the input:
+      t.get('card', 'shared', 'estTime').then(function(existingValue) {
+        if (existingValue) {
+          inputEl.value = existingValue;
         }
-
-        // Save to the card’s shared storage under key = 'plannedDuration'
-        t.set('card', 'shared', 'plannedDuration', value)
-          .then(function() {
-            document.getElementById('status').textContent =
-              '✅ Planned duration saved.';
-          })
-          .catch(function(err) {
-            console.error(err);
-            document.getElementById('status').textContent =
-              '❌ Error saving. Check console.';
-          });
       });
 
-      // 5) Only call sizeToFit() if it's defined (i.e., we’re truly inside Trello)
+      // (b) Whenever the user changes the number, write it back to the card’s shared storage:
+      inputEl.addEventListener('change', function() {
+        const v = this.value.trim();
+        if (v !== '' && !isNaN(v)) {
+          t.set('card', 'shared', 'estTime', v).catch(function(err) {
+            console.error('Error saving estTime:', err);
+          });
+        }
+      });
+
+      // (c) Finally, resize the iframe to fit this tiny content:
       if (typeof t.sizeToFit === 'function') {
-        t.sizeToFit().catch(function(e) {
-          // ignore any resizing errors
-        });
+        t.sizeToFit();
       }
     });
   </script>
 </body>
 </html>
-
