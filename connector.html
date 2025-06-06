@@ -5,23 +5,28 @@
 
   window.TrelloPowerUp.initialize({
     /**
-     * --- NEW CAPABILITY: CARD BADGE ---
-     * This function runs for each card on the board to decide if a badge should be shown.
+     * --- NEW CAPABILITY: CARD BADGE (WITH DEBUG LOGS) ---
     */
     'card-badge': function(t, options) {
-      // Get the estimated time that we saved for this card
+      // DEBUG LOG 1: Let's see if the function is even running
+      console.log('Badge function is running for a card...');
+
       return t.get('card', 'shared', DATA_KEY)
         .then(function(savedTime) {
-          // Check if a time has been saved and is greater than zero
+          // DEBUG LOG 2: Let's see what value we got from storage
+          console.log('For a card, found savedTime:', savedTime, '| Type:', typeof savedTime);
+
           if (savedTime && typeof savedTime === 'number' && savedTime > 0) {
-            // If yes, return the object that describes the badge
+            // DEBUG LOG 3: This will only print if the condition is met
+            console.log('SUCCESS: Condition was met. Returning badge object.');
             return {
-              text: savedTime + ' hrs', // The text to display
-              icon: 'https://img.icons8.com/ios/50/time-machine.png', // The same clock icon
-              color: 'blue', // You can pick green, yellow, red, blue, etc.
+              text: savedTime + ' hrs',
+              icon: 'https://img.icons8.com/ios/50/time-machine.png',
+              color: 'blue',
             };
           } else {
-            // If no time is saved, return null to show nothing
+            // DEBUG LOG 4: This will print if the condition fails
+            console.log('INFO: Condition not met. Returning null.');
             return null;
           }
         });
