@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Duration Tracker Connector</title>
+  </head>
+  <body>
+    <!-- 1) Load Trello’s Power-Up client script -->
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
+
+    <script>
+      // 2) Initialize with a barebones capability
+      TrelloPowerUp.initialize({
+        'card-back-section': function(t, options) {
+          // Return an empty array: no UI to show yet, but valid.
+          return [];
+        }
+      });
+    </script>
+  </body>
+</html>
