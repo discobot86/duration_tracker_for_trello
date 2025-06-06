@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Estimated Time</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 8px;
+    }
+    label, input, button {
+      display: block;
+      margin-bottom: 8px;
+    }
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 4px;
+    }
+  </style>
+</head>
+<body>
+  <label for="durationInput">Enter estimated time:</label>
+  <input type="text" id="durationInput" placeholder="e.g. 30m, 2h" />
+  <button id="saveButton">Save</button>
+
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script>
+    var t = window.TrelloPowerUp.iframe();
+    var DATA_KEY = 'estimated-time';
+
+    // On load, fetch any existing value and populate the input
+    t.get('card', 'shared', DATA_KEY)
+      .then(function(value) {
+        if (value) {
+          document.getElementById('durationInput').value = value;
+        }
+      });
+
+    // When user clicks “Save,” write (or remove) the shared card key
+    document.getElementById('saveButton').addEventListener('click', function() {
+      var newValue = document.getElementById('durationInput').value.trim();
+
+      if (!newValue) {
+        // If empty, remove the key so badge disappears
+        return t.remove('card', 'shared', DATA_KEY)
+          .then(function() {
+            return t.closePopup();
+          });
+      }
+
+      // Otherwise, save the new value and close
+      return t.set('card', 'shared', DATA_KEY, newValue)
+        .then(function() {
+          return t.closePopup();
+        });
+    });
+  </script>
+</body>
+</html>
