@@ -4,74 +4,98 @@
   <meta charset="UTF-8" />
   <title>Duration Tracker for Trello</title>
 
-  <!-- 1) Load Trello’s Power-Up client library -->
+  <!-- 1) Load the Trello Power-Up client library -->
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
-
-  <!-- (Optional) Any CSS you already had can go here -->
   <style>
-    /* Example styling—you can remove or replace with your own */
+    /* Basic styling—you can customize as desired */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
-    }
-    #content {
       padding: 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 6px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 8px;
+      font-size: 0.9em;
+      color: green;
     }
   </style>
 </head>
 <body>
   <!-- 
-    2) This <div> is where your existing UI goes.
-       If you already had HTML here, copy it in exactly as it was.
+    2) This is the content that will appear inside the iframe 
+       on the card-back under "Track Duration".
   -->
-  <div id="content">
-    <!-- === BEGIN your original content === -->
+  <h2>Duration Tracker</h2>
+  <p>Enter your planned duration (in hours):</p>
 
-    <!-- 
-      (Paste whatever was already in index.html here. 
-       For example, if you already had a header, buttons, etc., just drop it in.) 
-    -->
-    <h2>Duration Tracker</h2>
-    <p>Loading duration data…</p>
-    <!-- === END your original content === -->
-  </div>
+  <label for="planned-duration">
+    Planned duration (hrs):
+    <input
+      type="number"
+      id="planned-duration"
+      min="0"
+      step="0.25"
+      placeholder="e.g. 1.0, 1.25, 2.0"
+    />
+  </label>
 
-  <!-- 3) Initialize the Power-Up and declare the card-back-section capability -->
+  <button id="saveBtn">Save Duration</button>
+  <div id="status"></div>
+
   <script>
-    window.TrelloPowerUp.initialize({
-      // This key must match “card-back-section”
-      'card-back-section': function(t, opts) {
-        return {
-          // The header title of your section on the card back
-          title: 'Track Duration',
+    // 3) Initialize the Trello iframe context
+    const t = TrelloPowerUp.iframe();
 
-          // A small 32×32 or 64×64 icon shown next to the title
-          icon: 'https://discobot86.github.io/duration_tracker_for_trello/icon.png',
+    // 4) On load, fetch any existing stored value and pre-fill the input
+    t.get('card', 'shared', 'plannedDuration')
+      .then(function(existingValue) {
+        if (existingValue) {
+          document.getElementById('planned-duration').value = existingValue;
+        }
+      });
 
-          // Define the content as an iframe pointing back to this page
-          content: {
-            type: 'iframe',
-            // When Trello renders the card back, it will load index.html inside this iframe
-            url: t.signUrl('./index.html'),
-            height: 150 // Adjust if you need more/less vertical space
-          },
+    // 5) When the user clicks “Save”, write that number back to the card
+    document.getElementById('saveBtn').addEventListener('click', function() {
+      const inputEl = document.getElementById('planned-duration');
+      const value = inputEl.value.trim();
 
-          // (Optional) Add a Refresh button in the section header
-          action: {
-            text: 'Refresh',
-            callback: function(t) {
-              // Example: Show a tiny popup when the user clicks “Refresh”
-              return t.popup({
-                title: 'Refreshed',
-                body: 'Duration data has been updated.'
-              });
-            }
-          }
-        };
+      if (value === '' || isNaN(value)) {
+        document.getElementById('status').textContent =
+          'Please enter a valid number.';
+        return;
       }
 
-      // … you can register more capabilities here if needed …
+      // Save to the card’s shared storage under key = 'plannedDuration'
+      t.set('card', 'shared', 'plannedDuration', value)
+        .then(function() {
+          document.getElementById('status').textContent =
+            '✅ Planned duration saved.';
+        })
+        .catch(function(err) {
+          console.error(err);
+          document.getElementById('status').textContent =
+            '❌ Error saving. Check console.';
+        });
+    });
+
+    // (Optional) If you want to automatically resize the iframe
+    // based on your content height, you can call:
+    t.sizeToFit().catch(function(e) {
+      // ignore errors
     });
   </script>
 </body>
