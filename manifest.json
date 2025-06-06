@@ -9,11 +9,10 @@
     "64": "https://discobot86.github.io/duration_tracker_for_trello/icon.png",
     "128": "https://discobot86.github.io/duration_tracker_for_trello/icon.png"
   },
-  "capabilities": [
-    "card-back-section"
-  ],
-  "card-back-section": {
-    "url": "https://discobot86.github.io/duration_tracker_for_trello/index.html",
-    "height": 250
+  "capabilities": {
+    "cardBackSection": {
+      "url": "https://discobot86.github.io/duration_tracker_for_trello/index.html",
+      "height": 250
+    }
   }
 }
