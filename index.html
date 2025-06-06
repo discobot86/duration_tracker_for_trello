@@ -48,40 +48,51 @@
   <div id="status"></div>
 
   <script>
+    // 1) Initialize the Power-Up iframe context
     const t = TrelloPowerUp.iframe();
 
-    t.get('card', 'shared', 'plannedDuration')
-      .then(function(existingValue) {
-        if (existingValue) {
-          document.getElementById('planned-duration').value = existingValue;
+    // 2) Use t.render(...) so that Trello knows to wait until the iframe is ready.
+    t.render(function() {
+      // 3) On load, fetch any existing stored value and pre-fill the input
+      t.get('card', 'shared', 'plannedDuration')
+        .then(function(existingValue) {
+          if (existingValue) {
+            document.getElementById('planned-duration').value = existingValue;
+          }
+        });
+
+      // 4) When the user clicks "Save", write that number back to the card
+      document.getElementById('saveBtn').addEventListener('click', function() {
+        const inputEl = document.getElementById('planned-duration');
+        const value = inputEl.value.trim();
+
+        if (value === '' || isNaN(value)) {
+          document.getElementById('status').textContent =
+            'Please enter a valid number.';
+          return;
         }
+
+        // Save to the card’s shared storage under key = 'plannedDuration'
+        t.set('card', 'shared', 'plannedDuration', value)
+          .then(function() {
+            document.getElementById('status').textContent =
+              '✅ Planned duration saved.';
+          })
+          .catch(function(err) {
+            console.error(err);
+            document.getElementById('status').textContent =
+              '❌ Error saving. Check console.';
+          });
       });
 
-    document.getElementById('saveBtn').addEventListener('click', function() {
-      const inputEl = document.getElementById('planned-duration');
-      const value = inputEl.value.trim();
-
-      if (value === '' || isNaN(value)) {
-        document.getElementById('status').textContent =
-          'Please enter a valid number.';
-        return;
-      }
-
-      t.set('card', 'shared', 'plannedDuration', value)
-        .then(function() {
-          document.getElementById('status').textContent =
-            '✅ Planned duration saved.';
-        })
-        .catch(function(err) {
-          console.error(err);
-          document.getElementById('status').textContent =
-            '❌ Error saving. Check console.';
+      // 5) Only call sizeToFit() if it's defined (i.e., we’re truly inside Trello)
+      if (typeof t.sizeToFit === 'function') {
+        t.sizeToFit().catch(function(e) {
+          // ignore any resizing errors
         });
-    });
-
-    t.sizeToFit().catch(function(e) {
-      // ignore errors
+      }
     });
   </script>
 </body>
 </html>
+
