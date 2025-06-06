@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+      }
+      .badge {
+        background: #5aac44;
+        color: white;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-size: 10px;
+        margin-right: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <script>
+      var t = TrelloPowerUp.iframe();
+      const KEY_PLANNED = 'duration-tracker:planned-hr';
+      const KEY_ACTUAL  = 'duration-tracker:actual-hr';
+
+      // When the card front is rendered, show badges if values exist
+      t.render(function() {
+        return Promise.all([
+          t.get('card', 'shared', KEY_PLANNED),
+          t.get('card', 'shared', KEY_ACTUAL)
+        ]).then(function(values) {
+          var planned = values[0] || '';
+          var actual  = values[1] || '';
+          var container = document.body;
+
+          if (planned) {
+            var span1 = document.createElement('span');
+            span1.className = 'badge';
+            span1.textContent = 'P:' + planned + 'h';
+            container.appendChild(span1);
+          }
+          if (actual) {
+            var span2 = document.createElement('span');
+            span2.className = 'badge';
+            span2.textContent = 'A:' + actual + 'h';
+            container.appendChild(span2);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
