@@ -4,41 +4,41 @@
   <meta charset="UTF-8" />
   <title>Duration Tracker for Trello</title>
 
-  <!-- 1) Load the Trello Power-Up client library into the iframe -->
+  <!-- 1) Load the Trello Power-Up library into the iframe -->
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
 
   <style>
-    /* --------- MINIMAL STYLING to keep the box very small --------- */
+    /* ---------------------------------------------------
+       Minimal styling to mimic Trello’s own Description field
+       --------------------------------------------------- */
+
     html, body {
       margin: 0;
-      padding: 5px;
+      padding: 0;
+      background: transparent; /* Let Trello’s Card-Back frame show through */
     }
+
     body {
       font-family: Arial, sans-serif;
-      background: transparent;
+      overflow: hidden; /* No scrollbars—sizeToFit() will match height */
     }
-    label {
-      font-size: 11px;       /* small text for "Est. Time" */
-      margin-bottom: 2px;
-      display: block;
-      color: #444;
-    }
+
     input[type="number"] {
-      width: 60px;           /* just wide enough for “0.75”, “1.25”, etc. */
-      padding: 4px;
-      font-size: 13px;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 3px;
+      width: 100%;                  /* Full width of the iframe container */
+      padding: 6px 8px;             /* Similar padding to Trello’s input/textarea */
+      font-size: 14px;              /* Match Trello’s font size */
+      border: 1px solid #dfe1e6;    /* Light gray border, like Trello’s */
+      border-radius: 3px;           /* Slight rounding to match Trello */
+      background-color: #fafbfc;    /* Very light off-white to blend in */
+      box-sizing: border-box;       /* So padding doesn’t push us outside the width */
     }
   </style>
 </head>
 <body>
   <!-- 
-    2) Show “Est. Time” above a tiny input box. 
-       Whenever the user types a number, we’ll auto-save that value into the card’s shared data.
+    2) Only one input needed. The “Est. Time (hrs)” label is already in the Card-Back header 
+       via connector.html → title. So here we just render the input itself.
   -->
-  <label for="est-time">Est. Time (hrs):</label>
   <input
     type="number"
     id="est-time"
@@ -51,30 +51,39 @@
     // 3) Initialize the Trello iframe context:
     const t = TrelloPowerUp.iframe();
 
-    // 4) Wait until the Trello iframe is fully ready before running our logic:
+    // 4) Wait until Trello’s iframe context is ready
     t.render(function() {
       const inputEl = document.getElementById('est-time');
 
-      // (a) On load, fetch any existing “estTime” value stored on this card and pre-fill the input:
+      // (a) On load, fetch any existing “estTime” stored on this card:
       t.get('card', 'shared', 'estTime').then(function(existingValue) {
         if (existingValue) {
           inputEl.value = existingValue;
         }
+        // After setting the value (or even if blank), resize the iframe:
+        if (typeof t.sizeToFit === 'function') {
+          t.sizeToFit();
+        }
       });
 
-      // (b) Whenever the user changes the number, write it back to the card’s shared storage:
+      // (b) Whenever the user changes the number, save it back to the card:
       inputEl.addEventListener('change', function() {
         const v = this.value.trim();
         if (v !== '' && !isNaN(v)) {
-          t.set('card', 'shared', 'estTime', v).catch(function(err) {
-            console.error('Error saving estTime:', err);
+          t.set('card', 'shared', 'estTime', v).then(function() {
+            // After saving, resize again (in case “height” changed)
+            if (typeof t.sizeToFit === 'function') {
+              t.sizeToFit();
+            }
           });
         }
       });
 
-      // (c) Finally, resize the iframe to fit this tiny content:
-      if (typeof t.sizeToFit === 'function') {
-        t.sizeToFit();
+      // (c) In case there was no stored value at all, ensure we still resize:
+      if (!inputEl.value) {
+        if (typeof t.sizeToFit === 'function') {
+          t.sizeToFit();
+        }
       }
     });
   </script>
