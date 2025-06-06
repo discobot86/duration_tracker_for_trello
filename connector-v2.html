@@ -12,8 +12,11 @@
           if (savedTime && typeof savedTime === 'number' && savedTime > 0) {
             return {
               text: savedTime + ' hrs',
-              icon: 'https://discobot86.github.io/duration_tracker_for_trello/icon.png', // Using your repo's icon
-              color: 'blue'
+              icon: 'https://discobot86.github.io/duration_tracker_for_trello/icon.png',
+              color: 'blue',
+              // THIS IS THE CRUCIAL FIX:
+              // It tells Trello this is a dynamic badge and how often to check for updates.
+              refresh: 10 
             };
           } else {
             // Otherwise, it returns nothing, so no badge is shown
@@ -22,7 +25,7 @@
         });
     },
     'card-back-section': function(t, options) {
-      // This part is already correct and doesn't need to change
+      // This part is already correct
       return {
         title: 'Estimated Time (hrs)',
         icon: 'https://discobot86.github.io/duration_tracker_for_trello/icon.png',
