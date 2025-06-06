@@ -1,15 +1,31 @@
 <script src="https://p.trellocdn.com/power-up.min.js"></script>
 <script>
+  // Define our key for storing the data
+  var DATA_KEY = 'estimated-time';
+
   window.TrelloPowerUp.initialize({
     'card-badge': function(t, options) {
-      // This is the simplest possible badge. It does nothing.
-      // We are using this to test if the Power-Up can initialize correctly.
-      return null;
+      // This function gets the stored data for the card
+      return t.get('card', 'shared', DATA_KEY)
+        .then(function(savedTime) {
+          // and if a time is stored, it returns the badge object
+          if (savedTime && typeof savedTime === 'number' && savedTime > 0) {
+            return {
+              text: savedTime + ' hrs',
+              icon: 'https://discobot86.github.io/duration_tracker_for_trello/icon.png', // Using your repo's icon
+              color: 'blue'
+            };
+          } else {
+            // Otherwise, it returns nothing, so no badge is shown
+            return null;
+          }
+        });
     },
     'card-back-section': function(t, options) {
+      // This part is already correct and doesn't need to change
       return {
         title: 'Estimated Time (hrs)',
-        icon: 'https://img.icons8.com/ios/50/time-machine.png',
+        icon: 'https://discobot86.github.io/duration_tracker_for_trello/icon.png',
         content: {
           type: 'iframe',
           url: t.signUrl('./index.html'),
