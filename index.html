@@ -6,6 +6,8 @@
 
   <!-- 1) Load Trello's Power-Up library into the iframe -->
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css" />
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
 
   <style>
     /* --------------------------------------------
@@ -38,6 +40,27 @@
   </style>
 </head>
 <body>
+  <script>
+  var t = window.TrelloPowerUp.iframe();
+    <div class="window-module">
+  <h3 class="window-module-title">Estimated Time (hrs)</h3>
+  <div class="window-module-content">
+    <fieldset class="field-group">
+      <label class="label" for="estimatedTime">Estimated Time (hrs)</label>
+      <input
+        type="text"
+        id="estimatedTime"
+        class="field"
+        value=""
+        placeholder="e.g. 2.5"
+      />
+    </fieldset>
+  </div>
+</div>
+
+  // … your code to read/write “estimated time” goes here …
+</script>
+
   <!--
     2) Only render the input itself.
        The "Est. Time (hrs)" label lives in connector.html → title.
