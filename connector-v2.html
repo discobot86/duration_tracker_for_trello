@@ -1,38 +1,31 @@
-<script src="https://p.trellocdn.com/power-up.min.js"></script>
-<script>
-  // Define our key for storing the data
-  var DATA_KEY = 'estimated-time';
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Card-Back Connector</title>
+  <!-- Trello Power-Up client -->
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+</head>
+<body>
+  <script>
+    // 1) initialize the iframe client
+    var t = window.TrelloPowerUp.iframe();
 
-  window.TrelloPowerUp.initialize({
-    // THE FIX IS HERE: 'card-badges' (plural)
-    'card-badges': function(t, options) {
-      // This function gets the stored data for the card
-      return t.get('card', 'shared', DATA_KEY)
-        .then(function(savedTime) {
-          // and if a time is stored, it returns the badge object
-          if (savedTime && typeof savedTime === 'number' && savedTime > 0) {
-            return {
-              text: savedTime + ' hrs',
-              icon: 'https://discobot86.github.io/duration_tracker_for_trello/icon.png',
-              color: 'blue',
-              refresh: 10
-            };
-          } else {
-            // Otherwise, it returns nothing, so no badge is shown
-            return null;
+    // 2) tell Trello about our card-back section
+    window.TrelloPowerUp.initialize({
+      'card-back-section': function(t, opts) {
+        return {
+          title: 'Estimated Time (hrs)',
+          icon: t.signUrl('./icon.png'),    // your icon file
+          content: {
+            type: 'iframe',
+            url: t.signUrl('./index.html'),  // the styled field page
+            height: 140                      // tweak to fit your content
           }
-        });
-    },
-    'card-back-section': function(t, options) {
-      // This part is already correct
-      return {
-        title: 'Estimated Time (hrs)',
-        icon: 'https://discobot86.github.io/duration_tracker_for_trello/icon.png',
-        content: {
-          type: 'iframe',
-          url: t.signUrl('./index.html'),
-        }
-      };
-    }
-  });
-</script>
+        };
+      }
+    });
+  </script>
+</body>
+</html>
+
